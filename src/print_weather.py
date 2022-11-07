@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import sys
 import os
+
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 if os.path.exists(libdir):
@@ -13,12 +14,12 @@ import config
 
 import logging
 import time
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import traceback
 import requests
 import json
 import math
-from datetime import datetime,timedelta,date
+from datetime import datetime, timedelta, date
 
 API_KEY = config.API_KEY
 LATITUDE = config.LATITUDE
@@ -26,8 +27,8 @@ LONGITUDE = config.LONGITUDE
 TSUKURUMIJIMA_TENKI_CODE = config.TSUKURUMIJIMA_TENKI_CODE
 UNITS = 'metric'
 
-BASE_URL = 'https://api.openweathermap.org/data/2.5/weather?' 
-URL = BASE_URL + 'lat=' + LATITUDE + '&lon=' + LONGITUDE + '&units=' + UNITS +'&appid=' + API_KEY
+BASE_URL = 'https://api.openweathermap.org/data/2.5/weather?'
+URL = BASE_URL + 'lat=' + LATITUDE + '&lon=' + LONGITUDE + '&units=' + UNITS + '&appid=' + API_KEY
 
 TSUKURUMIJIMA_TENKI_URL = 'https://weather.tsukumijima.net/api/forecast/city/' + TSUKURUMIJIMA_TENKI_CODE
 
@@ -36,12 +37,13 @@ white = 'rgb(255,255,255)'
 grey = 'rgb(235,235,235)'
 
 logging.basicConfig(level=logging.DEBUG)
-    
+
+
 def write_to_screen():
 
     logging.info("epd7in5_V2 Demo")
     epd = epd7in5_V2.EPD()
-    
+
     logging.info("init and Clear")
     epd.init()
     epd.Clear()
@@ -85,14 +87,14 @@ def write_to_screen():
     draw = ImageDraw.Draw(Himage)
 
     # === 気温 ===
-    draw.text((275, 8), str(temp)+ '°C', font=font160, fill=0) #気温
-    draw.text((35, 335), '最高：' + str(temp_max)+ '°C', font=font40, fill=0) # 最高
+    draw.text((275, 8), str(temp) + '°C', font=font160, fill=0)  # 気温
+    draw.text((35, 335), '最高：' + str(temp_max) + '°C', font=font40, fill=0)  # 最高
     draw.rectangle((170, 385, 285, 387), fill=0)
-    draw.text((35, 400), '最低：' + str(temp_min)+ '°C', font=font40, fill=0) #最低
+    draw.text((35, 400), '最低：' + str(temp_min) + '°C', font=font40, fill=0)  # 最低
     # === 気温 ===
 
     # === アイコン + 日付 ===
-    icon_image = Image.open(os.path.join(picdir, data['weather'][0]['icon']+'.png'))
+    icon_image = Image.open(os.path.join(picdir, data['weather'][0]['icon'] + '.png'))
     Himage.paste(icon_image, (40, 15))
     draw.rectangle((25, 20, 225, 180), outline=0)
     draw.text((20, 200), str(time_str), font=font22, fill=0)
@@ -120,9 +122,9 @@ def write_to_screen():
     icon_tomorow_image = Image.open(os.path.join(picdir, icon_mapping.half_icon[tommorow_telop]))
     Himage.paste(icon_tomorow_image, (335, 335))
     draw.text((320, 316), tommorow, font=font18, fill=0)
-    draw.text((325, 410), tommorow_telop , font=font16, fill=0)
+    draw.text((325, 410), tommorow_telop, font=font16, fill=0)
     draw.text((325, 430), '最高：' + tsukumijima['forecasts'][1]['temperature']['max']['celsius'] + '°C', font=font16, fill=0)
-    draw.text((325, 450), '最低：'+ tsukumijima['forecasts'][1]['temperature']['min']['celsius'] + '°C', font=font16, fill=0)
+    draw.text((325, 450), '最低：' + tsukumijima['forecasts'][1]['temperature']['min']['celsius'] + '°C', font=font16, fill=0)
     # === 明日の天気 ===
 
     # === 明後日の天気 ===
@@ -133,15 +135,15 @@ def write_to_screen():
     icon_tomorow_image = Image.open(os.path.join(picdir, icon_mapping.half_icon[day_after_tomorrow_telop]))
     Himage.paste(icon_tomorow_image, (475, 335))
     draw.text((460, 316), day_after_tomorrow, font=font18, fill=0)
-    draw.text((465, 410), day_after_tomorrow_telop , font=font16, fill=0)
-    draw.text((465, 430),'最高：' + tsukumijima['forecasts'][2]['temperature']['max']['celsius'] + '°C', font=font16, fill=0)
-    draw.text((465, 450), '最低：'+ tsukumijima['forecasts'][2]['temperature']['min']['celsius'] + '°C', font=font16, fill=0)
+    draw.text((465, 410), day_after_tomorrow_telop, font=font16, fill=0)
+    draw.text((465, 430), '最高：' + tsukumijima['forecasts'][2]['temperature']['max']['celsius'] + '°C', font=font16, fill=0)
+    draw.text((465, 450), '最低：' + tsukumijima['forecasts'][2]['temperature']['min']['celsius'] + '°C', font=font16, fill=0)
     # === 明後日の天気 ===
 
     # === 更新の時間 ===
     draw.text((627, 330), 'UPDATED', font=font35, fill=white)
     current_time = datetime.now().strftime('%H:%M')
-    draw.text((627, 375), current_time, font = font60, fill=white)
+    draw.text((627, 375), current_time, font=font60, fill=white)
     # === 更新の時間 ===
 
     epd.display(epd.getbuffer(Himage))
@@ -151,8 +153,8 @@ try:
     write_to_screen()
 except IOError as e:
     logging.info(e)
-    
-except KeyboardInterrupt:    
+
+except KeyboardInterrupt:
     logging.info("ctrl + c:")
     epd7in5_V2.epdconfig.module_exit()
     exit()
